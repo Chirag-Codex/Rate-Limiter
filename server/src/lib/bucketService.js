@@ -1,14 +1,6 @@
 import Bucket from "../models/Bucket.js";
 
-/**
- * Atomically applies token bucket rate limit for a client.
- * Uses MongoDB update pipeline to avoid race conditions.
- *
- * @param {string} clientId - Unique identifier (e.g., IP address).
- * @param {number} capacity - Maximum tokens the bucket can hold.
- * @param {number} refillRate - Tokens added per second.
- * @returns {Promise<{allowed: boolean, retryAfter: number, tokens: number}>}
- */
+
 export async function checkRateLimit(clientId, capacity, refillRate) {
   const now = Date.now();
 

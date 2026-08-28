@@ -1,25 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const ENDPOINTS = [
   { name: 'Test endpoint', path: '/api/test', capacity: 5, refillRate: 1 },
   { name: 'Login endpoint', path: '/api/login', capacity: 3, refillRate: 0.5 },
   { name: 'Data endpoint', path: '/api/data', capacity: 10, refillRate: 2 },
 ];
-
-function simulateCall(bucket, capacity, refillRate) {
-  const now = Date.now();
-  const elapsed = (now - bucket.lastRefill) / 1000;
-  bucket.tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate);
-  bucket.lastRefill = now;
-
-  if (bucket.tokens >= 1) {
-    bucket.tokens -= 1;
-    return { ok: true, remaining: Math.floor(bucket.tokens), retryAfter: 0 };
-  }
-  const deficit = 1 - bucket.tokens;
-  const retryAfter = Math.ceil(deficit / refillRate);
-  return { ok: false, remaining: 0, retryAfter };
-}
 
 function statusFromState({ retryAfter, remaining, limit, lastResult }) {
   if (lastResult === 'idle') return 'idle';
@@ -57,15 +42,16 @@ function TokenDots({ capacity, remaining, statusKey }) {
 }
 
 function EndpointCard({ endpoint, onStatusChange }) {
-  const bucketRef = useRef({ tokens: endpoint.capacity, lastRefill: Date.now() });
   const [remaining, setRemaining] = useState(endpoint.capacity);
+  const [limit, setLimit] = useState(endpoint.capacity);
   const [retryAfter, setRetryAfter] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [lastResult, setLastResult] = useState('idle'); 
+  const [lastResult, setLastResult] = useState('idle');
   const [lastLatency, setLastLatency] = useState(null);
   const [requestCount, setRequestCount] = useState(0);
   const [lastCalledAt, setLastCalledAt] = useState(null);
 
+  // Countdown for retryAfter
   useEffect(() => {
     if (retryAfter <= 0) return;
     const id = setInterval(() => {
@@ -74,7 +60,7 @@ function EndpointCard({ endpoint, onStatusChange }) {
     return () => clearInterval(id);
   }, [retryAfter]);
 
-  const status = statusFromState({ retryAfter, remaining, limit: endpoint.capacity, lastResult });
+  const status = statusFromState({ retryAfter, remaining, limit, lastResult });
 
   useEffect(() => {
     onStatusChange(endpoint.path, status);
@@ -82,18 +68,41 @@ function EndpointCard({ endpoint, onStatusChange }) {
 
   const handleSend = useCallback(async () => {
     setLoading(true);
-    const latency = 260 + Math.random() * 480;
-    await new Promise((r) => setTimeout(r, latency));
+    const start = performance.now();
+    try {
+      const res = await fetch(endpoint.path);
+      const latency = Math.round(performance.now() - start);
 
-    const result = simulateCall(bucketRef.current, endpoint.capacity, endpoint.refillRate);
-    setRemaining(result.remaining);
-    setRetryAfter(result.retryAfter);
-    setLastResult(result.ok ? 'success' : 'limited');
-    setLastLatency(Math.round(latency));
-    setRequestCount((c) => c + 1);
-    setLastCalledAt(new Date());
-    setLoading(false);
-  }, [endpoint.capacity, endpoint.refillRate]);
+      // Read rate-limit headers from backend
+      const remainingHeader = res.headers.get('X-RateLimit-Remaining');
+      const limitHeader = res.headers.get('X-RateLimit-Limit');
+      const retryAfterHeader = res.headers.get('Retry-After');
+
+      if (remainingHeader !== null) setRemaining(Number(remainingHeader));
+      if (limitHeader !== null) setLimit(Number(limitHeader));
+
+      if (res.status === 429) {
+        const retrySeconds = retryAfterHeader ? Number(retryAfterHeader) : 0;
+        setRetryAfter(retrySeconds);
+        setLastResult('limited');
+      } else if (!res.ok) {
+        setLastResult('error');
+      } else {
+        setRetryAfter(0);
+        setLastResult('success');
+      }
+
+      setLastLatency(latency);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setLastResult('error');
+      setLastLatency(null);
+    } finally {
+      setRequestCount((c) => c + 1);
+      setLastCalledAt(new Date());
+      setLoading(false);
+    }
+  }, [endpoint.path]);
 
   const style = STATUS_STYLES[status];
 
@@ -112,10 +121,10 @@ function EndpointCard({ endpoint, onStatusChange }) {
 
       <div className="flex items-baseline gap-1.5 mt-4 mb-3">
         <span className="font-mono text-[30px] font-medium text-[#E6EDF3] leading-none">{remaining}</span>
-        <span className="font-mono text-[14px] text-[#6E7681]">/ {endpoint.capacity} tokens</span>
+        <span className="font-mono text-[14px] text-[#6E7681]">/ {limit} tokens</span>
       </div>
 
-      <TokenDots capacity={endpoint.capacity} remaining={remaining} statusKey={status} />
+      <TokenDots capacity={limit} remaining={remaining} statusKey={status} />
 
       <div className="flex items-center justify-between font-mono text-[11px] text-[#6E7681] border-t border-[#1E252B] mt-4 pt-3">
         <span>refill {endpoint.refillRate}/s</span>
