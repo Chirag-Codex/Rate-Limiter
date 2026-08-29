@@ -5,6 +5,9 @@ import demoRoutes from "./routes/demoRoutes.js";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import authRoutes from "./routes/authRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import v1Routes from "./routes/v1Routes.js";
 const app = express();
 app.set("trust proxy", 1);
 
@@ -30,7 +33,10 @@ app.use(
 
 app.use(express.json({ limit: "10kb" }));
 
+app.use("/auth", authRoutes);
 app.use("/api", demoRoutes);
+app.use("/projects", projectRoutes);
+app.use("/v1", v1Routes);
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
 });

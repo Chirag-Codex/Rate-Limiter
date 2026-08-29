@@ -1,0 +1,98 @@
+import crypto from "crypto";
+import Project from "../models/Project.js";
+
+function generateApiKey() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function hashApiKey(apiKey) {
+  return crypto.createHash("sha256").update(apiKey).digest("hex");
+}
+
+export async function createProject(req, res) {
+ try{ const { name, websiteUrl, capacity, refillRate } = req.body;
+  if(!name || !websiteUrl) {
+    return res.status(400).json({ error: "Name and websiteUrl are required" });
+  }
+  if(capacity!==undefined &&(isNaN(capacity) || capacity < 1)) {
+    return res.status(400).json({ error: "Capacity must be a number greater than or equal to 1" });
+  }
+  if(refillRate!==undefined &&(isNaN(refillRate) || refillRate <= 0)) {
+    return res.status(400).json({ error: "Refill rate must be a number greater than or equal to 0" });
+  }
+  const rawKey=generateApiKey();
+  const hashedKey=await hashApiKey(rawKey);
+
+  const project=new Project({
+    name,
+    websiteUrl,
+    ownerId: req.user._id,
+    apiKeyHash: hashedKey,
+    capacity: capacity || 10,
+    refillRate: refillRate || 1,
+  });
+  await project.save();
+   res.status(201).json({
+      project: {
+        id: project._id,
+        name: project.name,
+        websiteUrl: project.websiteUrl,
+        capacity: project.capacity,
+        refillRate: project.refillRate,
+      },
+      apiKey: rawKey,
+    });}
+    catch (error) {
+    console.error("Error creating project:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function getProjects(req, res) {
+  try {
+    const projects = await Project.find({ ownerId: req.user._id }).select(
+      "-apiKeyHash"
+    );
+    res.status(200).json({ projects });
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function deleteProject(req,res){
+    try{
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ error: "Project not found" });
+        }
+        if(!project.ownerId.equals(req.user._id)){
+            return res.status(403).json({ error: "You do not have permission to delete this project" });
+        }
+        await project.deleteOne();
+        res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting project:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+export async function getProjectById(req, res) {
+  try {
+    const project = await Project.findById(req.params.id).select("-apiKeyHash");
+
+    if (!project) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
+
+    if (!project.ownerId.equals(req.user._id)) {
+      return res.status(403).json({ msg: "Not authorized to view this project" });
+    }
+
+    res.status(200).json({ project });
+  } catch (err) {
+    console.error("Error in getProjectById:", err.message);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+}
