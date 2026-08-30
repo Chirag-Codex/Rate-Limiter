@@ -1,5 +1,7 @@
 import crypto from "crypto";
+import mongoose from "mongoose";
 import Project from "../models/Project.js";
+import Bucket from "../models/Bucket.js";
 
 function generateApiKey() {
   return crypto.randomBytes(32).toString("hex");
@@ -10,29 +12,30 @@ function hashApiKey(apiKey) {
 }
 
 export async function createProject(req, res) {
- try{ const { name, websiteUrl, capacity, refillRate } = req.body;
-  if(!name || !websiteUrl) {
-    return res.status(400).json({ error: "Name and websiteUrl are required" });
-  }
-  if(capacity!==undefined &&(isNaN(capacity) || capacity < 1)) {
-    return res.status(400).json({ error: "Capacity must be a number greater than or equal to 1" });
-  }
-  if(refillRate!==undefined &&(isNaN(refillRate) || refillRate <= 0)) {
-    return res.status(400).json({ error: "Refill rate must be a number greater than or equal to 0" });
-  }
-  const rawKey=generateApiKey();
-  const hashedKey=await hashApiKey(rawKey);
+  try {
+    const { name, websiteUrl, capacity, refillRate } = req.body;
+    if (!name || !websiteUrl) {
+      return res.status(400).json({ error: "Name and websiteUrl are required" });
+    }
+    if (capacity !== undefined && (isNaN(capacity) || capacity < 1)) {
+      return res.status(400).json({ error: "Capacity must be a number greater than or equal to 1" });
+    }
+    if (refillRate !== undefined && (isNaN(refillRate) || refillRate <= 0)) {
+      return res.status(400).json({ error: "Refill rate must be a number greater than or equal to 0" });
+    }
+    const rawKey = generateApiKey();
+    const hashedKey = hashApiKey(rawKey);
 
-  const project=new Project({
-    name,
-    websiteUrl,
-    ownerId: req.user._id,
-    apiKeyHash: hashedKey,
-    capacity: capacity || 10,
-    refillRate: refillRate || 1,
-  });
-  await project.save();
-   res.status(201).json({
+    const project = new Project({
+      name,
+      websiteUrl,
+      ownerId: req.user._id,
+      apiKeyHash: hashedKey,
+      capacity: capacity || 10,
+      refillRate: refillRate || 1,
+    });
+    await project.save();
+    res.status(201).json({
       project: {
         id: project._id,
         name: project.name,
@@ -41,8 +44,8 @@ export async function createProject(req, res) {
         refillRate: project.refillRate,
       },
       apiKey: rawKey,
-    });}
-    catch (error) {
+    });
+  } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -60,26 +63,32 @@ export async function getProjects(req, res) {
   }
 }
 
-export async function deleteProject(req,res){
-    try{
-        const project = await Project.findById(req.params.id);
-        if (!project) {
-            return res.status(404).json({ error: "Project not found" });
-        }
-        if(!project.ownerId.equals(req.user._id)){
-            return res.status(403).json({ error: "You do not have permission to delete this project" });
-        }
-        await project.deleteOne();
-        res.status(200).json({ message: "Project deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting project:", error);
-        res.status(500).json({ error: "Internal server error" });
+export async function deleteProject(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "Invalid project ID" });
     }
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    if (!project.ownerId.equals(req.user._id)) {
+      return res.status(403).json({ error: "You do not have permission to delete this project" });
+    }
+    await project.deleteOne();
+    await Bucket.deleteMany({ clientId: new RegExp(`^${project._id}:`) });
+    res.status(200).json({ message: "Project deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 }
-
 
 export async function getProjectById(req, res) {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ msg: "Invalid project ID" });
+    }
     const project = await Project.findById(req.params.id).select("-apiKeyHash");
 
     if (!project) {
