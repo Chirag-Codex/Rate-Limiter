@@ -1,6 +1,9 @@
-// Centralized API configuration for dev and production
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
+const BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://rate-limiter-jcmd.onrender.com' : '')
+).replace(/\/$/, '');
 
 export function apiUrl(path) {
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
