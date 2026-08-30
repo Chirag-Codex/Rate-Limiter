@@ -33,7 +33,22 @@ app.use(globalLimiter);
 
 app.use(
   cors({
-    origin: ENV.CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, server-to-server, curl)
+      if (!origin) return callback(null, true);
+
+      const configuredOrigins = ENV.CLIENT_URL ? ENV.CLIENT_URL.split(",").map((o) => o.trim()) : [];
+      const isAllowed =
+        configuredOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        origin.includes("localhost") ||
+        origin === "https://rate-limiter-ruddy.vercel.app";
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} blocked by CORS policy`));
+    },
     credentials: true,
   }),
 );
