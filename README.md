@@ -519,5 +519,4 @@ Visit `http://localhost:5173` in your browser.
 
 ---
 
-## 📄 License
-This project is licensed under the [ISC License](LICENSE).
+
