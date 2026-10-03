@@ -22,7 +22,7 @@ export async function checkRateLimit(clientId, capacity, refillRate) {
           $let: {
             vars: {
               elapsed: {
-                $divide: [{ $subtract: [now, "$lastRefill"] }, 1000],
+                $max: [0, { $divide: [{ $subtract: [now, "$lastRefill"] }, 1000] }],
               },
             },
             in: {

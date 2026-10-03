@@ -21,6 +21,8 @@ const projectSchema = new mongoose.Schema(
     apiKeyHash: {
       type: String,
       required: true,
+      unique: true,
+      index: true,
     },
     capacity: {
       type: Number,

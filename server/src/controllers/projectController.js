@@ -14,14 +14,21 @@ function hashApiKey(apiKey) {
 export async function createProject(req, res) {
   try {
     const { name, websiteUrl, capacity, refillRate } = req.body;
-    if (!name || !websiteUrl) {
-      return res.status(400).json({ error: "Name and websiteUrl are required" });
+    if (!name || typeof name !== "string" || name.trim().length === 0) {
+      return res.status(400).json({ error: "Project name is required and must be a non-empty string" });
     }
-    if (capacity !== undefined && (isNaN(capacity) || capacity < 1)) {
-      return res.status(400).json({ error: "Capacity must be a number greater than or equal to 1" });
+      if (!websiteUrl || typeof websiteUrl !== "string" || websiteUrl.trim().length === 0) {
+      return res.status(400).json({ error: "websiteUrl is required and must be a non-empty string" });
     }
-    if (refillRate !== undefined && (isNaN(refillRate) || refillRate <= 0)) {
-      return res.status(400).json({ error: "Refill rate must be a number greater than or equal to 0" });
+    if (capacity !== undefined) {
+      if (typeof capacity !== "number" || !Number.isFinite(capacity) || capacity < 1) {
+        return res.status(400).json({ error: "Capacity must be a valid number greater than or equal to 1" });
+      }
+    }
+     if (refillRate !== undefined) {
+      if (typeof refillRate !== "number" || !Number.isFinite(refillRate) || refillRate <= 0) {
+        return res.status(400).json({ error: "Refill rate must be a valid number greater than 0" });
+      }
     }
     const rawKey = generateApiKey();
     const hashedKey = hashApiKey(rawKey);
@@ -46,6 +53,9 @@ export async function createProject(req, res) {
       apiKey: rawKey,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: "You already have a project with this name" });
+    }
     console.error("Error creating project:", error);
     res.status(500).json({ error: "Internal server error" });
   }

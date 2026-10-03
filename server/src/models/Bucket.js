@@ -38,6 +38,8 @@ const bucketSchema = new mongoose.Schema(
   }
 );
 
+bucketSchema.index({updatedAt: 1}, {expireAfterSeconds: 86400});
+
 const Bucket = mongoose.model("Bucket", bucketSchema);
 
 export default Bucket;
