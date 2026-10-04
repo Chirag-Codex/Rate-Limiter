@@ -9,8 +9,8 @@ export async function checkRateLimit(clientId, capacity, refillRate) {
     {
       $set: {
         clientId: clientId,  
-        capacity: { $ifNull: ["$capacity", capacity] },
-        refillRate: { $ifNull: ["$refillRate", refillRate] },
+        capacity: capacity,
+        refillRate: refillRate,
         tokens: { $ifNull: ["$tokens", capacity] },
         lastRefill: { $ifNull: ["$lastRefill", now] },
       },
