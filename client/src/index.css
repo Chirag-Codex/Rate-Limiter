@@ -1,1 +1,88 @@
 @import "tailwindcss";
+
+:root {
+
+  --bg-base: #151A26;
+  --bg-elevated: #1F2235;
+  --bg-chip: #2A2D45;
+  --border-subtle: #2A3044;
+
+  --text-primary: #F1F1F6;
+  --text-secondary: #9A9DB2;
+  --text-muted: #868A9F;
+
+  --accent-teal: #5FA8B8;
+  --accent-purple: #3F0F4F;
+  --accent-magenta: #7B2B82;
+
+  --button-light-bg: #ECECF1;
+  --button-light-text: #12151E;
+
+  --danger: #E06D75;
+  --warning: #E5A852;
+  --success: #4EBA88;
+
+  --gradient-hero: radial-gradient(ellipse 90% 70% at 50% -15%, rgba(123, 43, 130, 0.45) 0%, rgba(63, 15, 79, 0.35) 40%, rgba(27, 18, 64, 0.15) 70%, transparent 100%);
+  --gradient-divider: linear-gradient(90deg, transparent 0%, rgba(123, 43, 130, 0.5) 30%, rgba(95, 168, 184, 0.5) 70%, transparent 100%);
+  --gradient-tab-underline: linear-gradient(90deg, #5FA8B8 0%, rgba(95, 168, 184, 0) 100%);
+}
+
+@theme {
+  --color-base: #151A26;
+  --color-elevated: #1F2235;
+  --color-chip: #2A2D45;
+  --color-border-subtle: #2A3044;
+  --color-subtle: #2A3044;
+
+  --color-primary: #F1F1F6;
+  --color-secondary: #9A9DB2;
+  --color-muted: #868A9F;
+
+  --color-accent-teal: #5FA8B8;
+  --color-accent-purple: #3F0F4F;
+  --color-accent-magenta: #7B2B82;
+
+  --color-btn-light-bg: #ECECF1;
+  --color-btn-light-text: #12151E;
+
+  --color-danger: #E06D75;
+  --color-warning: #E5A852;
+  --color-success: #4EBA88;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --letter-spacing-eyebrow: 0.18em;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Accessible Global Focus Rings */
+:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
+/* Atmosphere Utility Classes */
+.hero-glow {
+  background-image: var(--gradient-hero);
+  background-repeat: no-repeat;
+}
+
+.divider-glow {
+  height: 1px;
+  background-image: var(--gradient-divider);
+}
+
+.tab-active-indicator {
+  background-image: var(--gradient-tab-underline);
+}

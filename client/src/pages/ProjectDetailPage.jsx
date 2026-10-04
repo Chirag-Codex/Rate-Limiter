@@ -102,17 +102,17 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <p className="text-[13px] text-slate-500">Loading project…</p>
+        <p className="text-sm text-muted">Loading project…</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="max-w-3xl mx-auto p-6">
-        <p className="text-[13px] text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="text-xs text-danger bg-danger/10 border border-danger/20 rounded-sm px-4 py-3">
           {error}
-        </p>
+        </div>
       </div>
     )
   }
@@ -120,86 +120,96 @@ export default function ProjectDetailPage() {
   if (!project) return null
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <Link to="/projects" className="text-[13px] text-slate-500 hover:text-slate-100 transition-colors">
-          ← Back to projects
-        </Link>
+    <div className="relative">
+      <div className="absolute inset-x-0 top-0 h-44 hero-glow pointer-events-none" />
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate('/test', { state: { prefillUrl: project.websiteUrl } })}
-            className="text-[12px] font-medium px-3 py-1.5 rounded-xl bg-teal-300/10 text-teal-300 border border-teal-300/20 hover:bg-teal-300/20 transition-colors"
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <Link
+            to="/projects"
+            className="text-xs text-secondary hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal rounded-sm"
           >
-            Test this endpoint →
-          </button>
+            ← Back to projects
+          </Link>
 
-          {confirmDelete ? (
-            <>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="text-[12px] font-medium px-3 py-1.5 rounded-xl bg-red-400/10 text-red-400 border border-red-400/20 hover:bg-red-400/20 disabled:opacity-50 transition-colors"
-              >
-                {deleting ? 'Deleting…' : 'Confirm delete'}
-              </button>
-              <button
-                onClick={() => setConfirmDelete(false)}
-                disabled={deleting}
-                className="text-[12px] px-3 py-1.5 rounded-xl border border-[#1C2230] text-slate-500 hover:text-slate-100 transition-colors"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setConfirmDelete(true)}
-              className="text-[12px] font-medium px-3 py-1.5 rounded-xl border border-[#1C2230] text-slate-500 hover:text-red-400 hover:border-red-400/30 transition-colors"
+              onClick={() => navigate('/test', { state: { prefillUrl: project.websiteUrl } })}
+              className="bg-btn-light-bg hover:bg-white text-btn-light-text px-3.5 py-1.5 rounded-sm text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal shadow-xs"
             >
-              Delete project
+              Test this endpoint →
             </button>
-          )}
-        </div>
-      </div>
 
-      <h1 className="text-[22px] font-semibold text-slate-100 mb-1">{project.name}</h1>
-      <p className="text-[13px] text-slate-500 mb-6">{project.websiteUrl}</p>
+            {confirmDelete ? (
+              <>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="text-xs font-medium px-3.5 py-1.5 rounded-sm bg-danger/20 text-danger border border-danger/30 hover:bg-danger/30 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+                >
+                  {deleting ? 'Deleting…' : 'Confirm delete'}
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  disabled={deleting}
+                  className="text-xs px-3.5 py-1.5 rounded-sm bg-chip text-secondary hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="text-xs font-medium px-3.5 py-1.5 rounded-sm bg-chip hover:bg-danger/10 text-secondary hover:text-danger border border-border-subtle hover:border-danger/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+              >
+                Delete project
+              </button>
+            )}
+          </div>
+        </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-[#12161C] p-4 rounded-xl border border-[#1C2230]">
-          <p className="text-[12px] text-slate-500 mb-1">Capacity</p>
-          <p className="font-mono text-[20px] text-slate-100">{project.capacity}</p>
+        <div className="mb-8">
+          <p className="text-xs uppercase tracking-eyebrow text-secondary font-medium mb-1.5">Project details</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary mb-1">{project.name}</h1>
+          <p className="text-sm text-muted">{project.websiteUrl}</p>
         </div>
-        <div className="bg-[#12161C] p-4 rounded-xl border border-[#1C2230]">
-          <p className="text-[12px] text-slate-500 mb-1">Refill rate</p>
-          <p className="font-mono text-[20px] text-slate-100">
-            {project.refillRate}
-            <span className="text-[13px] text-slate-500">/s</span>
-          </p>
-        </div>
-        <div className="bg-[#12161C] p-4 rounded-xl border border-[#1C2230]">
-          <p className="text-[12px] text-slate-500 mb-1">Allowed requests</p>
-          <p className="font-mono text-[20px] text-teal-300">{project.allowedCount}</p>
-        </div>
-        <div className="bg-[#12161C] p-4 rounded-xl border border-[#1C2230]">
-          <p className="text-[12px] text-slate-500 mb-1">Denied requests</p>
-          <p className="font-mono text-[20px] text-red-400">{project.deniedCount}</p>
-        </div>
-      </div>
 
-      <div className="bg-[#12161C] p-4 rounded-xl border border-[#1C2230]">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-medium text-slate-100">Integration code</h2>
-          <button
-            onClick={handleCopySnippet}
-            className="text-[12px] font-medium px-3 py-1.5 rounded-xl border border-[#1C2230] text-slate-100 hover:border-teal-300/40 transition-colors"
-          >
-            {snippetCopied ? 'Copied ✓' : 'Copy snippet'}
-          </button>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-elevated p-5 rounded-md border border-border-subtle">
+            <p className="text-xs text-muted mb-2 font-medium">Capacity</p>
+            <p className="text-3xl font-light text-primary">{project.capacity}</p>
+          </div>
+          <div className="bg-elevated p-5 rounded-md border border-border-subtle">
+            <p className="text-xs text-muted mb-2 font-medium">Refill rate</p>
+            <p className="text-3xl font-light text-primary">
+              {project.refillRate}
+              <span className="text-xs text-muted font-normal ml-1">/s</span>
+            </p>
+          </div>
+          <div className="bg-elevated p-5 rounded-md border border-border-subtle">
+            <p className="text-xs text-muted mb-2 font-medium">Allowed requests</p>
+            <p className="text-3xl font-light text-accent-teal">{project.allowedCount}</p>
+          </div>
+          <div className="bg-elevated p-5 rounded-md border border-border-subtle">
+            <p className="text-xs text-muted mb-2 font-medium">Denied requests</p>
+            <p className="text-3xl font-light text-danger">{project.deniedCount}</p>
+          </div>
         </div>
-        <pre className="bg-[#0B0E14] border border-[#1C2230] p-4 rounded-xl overflow-x-auto text-[12px] font-mono text-slate-400">
-          {INTEGRATION_SNIPPET}
-        </pre>
+
+        <div className="bg-elevated p-6 rounded-md border border-border-subtle">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-primary">Integration code</h2>
+            <button
+              onClick={handleCopySnippet}
+              className="text-xs font-medium px-3.5 py-1.5 rounded-sm bg-chip hover:bg-chip/80 text-secondary hover:text-primary border border-border-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal"
+            >
+              {snippetCopied ? 'Copied ✓' : 'Copy snippet'}
+            </button>
+          </div>
+          <pre className="bg-base border border-border-subtle p-4 rounded-sm overflow-x-auto text-xs font-mono text-secondary leading-relaxed">
+            {INTEGRATION_SNIPPET}
+          </pre>
+        </div>
       </div>
     </div>
   )

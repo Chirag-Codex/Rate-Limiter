@@ -98,154 +98,157 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-[20px] font-semibold text-slate-100">Subscription plans</h1>
-        <p className="text-[13px] text-slate-500 mt-1">
-          Choose a plan to scale your project quotas and burst token capacities.
-        </p>
+    <div className="relative">
+      <div className="absolute inset-x-0 top-0 h-44 hero-glow pointer-events-none" />
+
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-8">
+          <p className="text-xs uppercase tracking-eyebrow text-secondary font-medium mb-1.5">RateGuard</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary">Subscription plans</h1>
+          <p className="text-sm text-muted mt-1.5">
+            Choose a plan to scale your project quotas and burst token capacities.
+          </p>
+        </div>
+
+        {error && (
+          <div className="text-xs text-danger bg-danger/10 border border-danger/20 rounded-sm px-3.5 py-2.5 mb-6">
+            {error}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Free */}
+          <div className="bg-elevated border border-border-subtle hover:border-border-subtle/80 transition-colors rounded-md p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-primary">Free</h2>
+                {currentPlan === 'FREE' && (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-sm bg-chip text-accent-teal border border-border-subtle">
+                    Current
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl sm:text-4xl font-light text-primary">₹0</span>
+                <span className="text-xs text-muted">/mo</span>
+              </div>
+              <p className="text-xs text-secondary mt-1">Hobby & basic integrations</p>
+
+              <div className="mt-6 pt-5 border-t border-border-subtle space-y-3 text-xs text-secondary">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 3 Projects max
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 10 tokens capacity burst
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 1 token/sec refill
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> Standard analytics
+                </div>
+              </div>
+            </div>
+
+            <button
+              disabled
+              className="mt-8 w-full py-2 rounded-sm text-xs font-medium bg-base border border-border-subtle text-muted cursor-not-allowed"
+            >
+              {currentPlan === 'FREE' ? 'Active Plan' : 'Free tier'}
+            </button>
+          </div>
+
+          {/* Gold */}
+          <div className="bg-elevated border border-accent-teal/50 rounded-md p-6 flex flex-col justify-between relative shadow-xs">
+            <span className="absolute -top-2.5 right-4 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-sm bg-btn-light-bg text-btn-light-text shadow-xs">
+              POPULAR
+            </span>
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-primary">Gold</h2>
+                {currentPlan === 'GOLD' && (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-sm bg-chip text-accent-teal border border-border-subtle">
+                    Current
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl sm:text-4xl font-light text-primary">₹499</span>
+                <span className="text-xs text-muted">/mo</span>
+              </div>
+              <p className="text-xs text-secondary mt-1">For growing apps & teams</p>
+
+              <div className="mt-6 pt-5 border-t border-border-subtle space-y-3 text-xs text-secondary">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal font-semibold">✓</span> 10 Projects max
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal font-semibold">✓</span> 50 tokens capacity burst
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal font-semibold">✓</span> 5 tokens/sec refill
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal font-semibold">✓</span> Priority email support
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => handleUpgrade('GOLD')}
+              disabled={loading || currentPlan === 'GOLD'}
+              className="mt-8 w-full py-2 rounded-sm text-xs font-medium bg-btn-light-bg hover:bg-white text-btn-light-text transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal shadow-xs"
+            >
+              {currentPlan === 'GOLD' ? 'Active Plan' : loading ? 'Processing…' : 'Upgrade to Gold'}
+            </button>
+          </div>
+
+          {/* Pro */}
+          <div className="bg-elevated border border-border-subtle hover:border-border-subtle/80 transition-colors rounded-md p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-primary">Pro</h2>
+                {currentPlan === 'PRO' && (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-sm bg-chip text-accent-teal border border-border-subtle">
+                    Current
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl sm:text-4xl font-light text-primary">₹1,499</span>
+                <span className="text-xs text-muted">/mo</span>
+              </div>
+              <p className="text-xs text-secondary mt-1">High-frequency microservices</p>
+
+              <div className="mt-6 pt-5 border-t border-border-subtle space-y-3 text-xs text-secondary">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 25 Projects max
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 200 tokens capacity burst
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 20 tokens/sec refill
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-accent-teal">✓</span> 24/7 Engineering support
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => handleUpgrade('PRO')}
+              disabled={loading || currentPlan === 'PRO'}
+              className="mt-8 w-full py-2 rounded-sm text-xs font-medium bg-chip hover:bg-chip/80 text-primary border border-border-subtle transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal"
+            >
+              {currentPlan === 'PRO' ? 'Active Plan' : loading ? 'Processing…' : 'Upgrade to Pro'}
+            </button>
+          </div>
+        </div>
       </div>
-
-      {error && (
-        <div className="text-[13px] text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-3 py-2 mb-4">
-          {error}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Free */}
-        <div className="bg-[#12161C] border border-[#1C2230] hover:border-teal-300/30 transition-colors rounded-2xl p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold text-slate-100">Free</h2>
-              {currentPlan === 'FREE' && (
-                <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-teal-300/10 text-teal-300 border border-teal-300/20">
-                  Current
-                </span>
-              )}
-            </div>
-
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-[28px] font-bold text-slate-100 font-mono">₹0</span>
-              <span className="text-[12px] text-slate-500">/mo</span>
-            </div>
-            <p className="text-[12px] text-slate-500 mt-1">Hobby & basic integrations</p>
-
-            <div className="mt-6 pt-5 border-t border-[#1C2230] space-y-2.5 font-mono text-[12px] text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 3 Projects max
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 10 tokens capacity burst
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 1 token/sec refill
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> Standard analytics
-              </div>
-            </div>
-          </div>
-
-          <button
-            disabled
-            className="mt-6 w-full py-2.5 rounded-xl text-[13px] font-medium bg-[#0B0E14] border border-[#1C2230] text-slate-500 cursor-not-allowed"
-          >
-            {currentPlan === 'FREE' ? 'Active Plan' : 'Free tier'}
-          </button>
-        </div>
-
-        {/* Gold */}
-        <div className="bg-[#12161C] border-2 border-teal-300/40 rounded-2xl p-5 flex flex-col justify-between relative shadow-lg shadow-teal-500/5">
-          <span className="absolute -top-3 right-5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-300 text-[#0B0E14]">
-            POPULAR
-          </span>
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold text-teal-300">Gold</h2>
-              {currentPlan === 'GOLD' && (
-                <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-teal-300/10 text-teal-300 border border-teal-300/20">
-                  Current
-                </span>
-              )}
-            </div>
-
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-[28px] font-bold text-slate-100 font-mono">₹499</span>
-              <span className="text-[12px] text-slate-500">/mo</span>
-            </div>
-            <p className="text-[12px] text-slate-500 mt-1">For growing apps & teams</p>
-
-            <div className="mt-6 pt-5 border-t border-[#1C2230] space-y-2.5 font-mono text-[12px] text-slate-300">
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300 font-bold">✓</span> 10 Projects max
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300 font-bold">✓</span> 50 tokens capacity burst
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300 font-bold">✓</span> 5 tokens/sec refill
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300 font-bold">✓</span> Priority email support
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleUpgrade('GOLD')}
-            disabled={loading || currentPlan === 'GOLD'}
-            className="mt-6 w-full py-2.5 rounded-xl text-[13px] font-semibold bg-teal-300 hover:bg-teal-200 text-[#0B0E14] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {currentPlan === 'GOLD' ? 'Active Plan' : loading ? 'Processing…' : 'Upgrade to Gold'}
-          </button>
-        </div>
-
-        {/* Pro */}
-        <div className="bg-[#12161C] border border-[#1C2230] hover:border-teal-300/30 transition-colors rounded-2xl p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold text-slate-100">Pro</h2>
-              {currentPlan === 'PRO' && (
-                <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-teal-300/10 text-teal-300 border border-teal-300/20">
-                  Current
-                </span>
-              )}
-            </div>
-
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-[28px] font-bold text-slate-100 font-mono">₹1,499</span>
-              <span className="text-[12px] text-slate-500">/mo</span>
-            </div>
-            <p className="text-[12px] text-slate-500 mt-1">High-frequency microservices</p>
-
-            <div className="mt-6 pt-5 border-t border-[#1C2230] space-y-2.5 font-mono text-[12px] text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 25 Projects max
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 200 tokens capacity burst
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 20 tokens/sec refill
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-teal-300">✓</span> 24/7 Engineering support
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleUpgrade('PRO')}
-            disabled={loading || currentPlan === 'PRO'}
-            className="mt-6 w-full py-2.5 rounded-xl text-[13px] font-semibold bg-teal-300/10 hover:bg-teal-300/20 text-teal-300 border border-teal-300/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {currentPlan === 'PRO' ? 'Active Plan' : loading ? 'Processing…' : 'Upgrade to Pro'}
-          </button>
-        </div>
-      </div>
-
-     
     </div>
   )
 }

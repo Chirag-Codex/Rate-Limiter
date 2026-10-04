@@ -36,37 +36,39 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center px-4">
-      <form onSubmit={handleSubmit} className="bg-[#12161C] p-8 rounded-2xl border border-[#1C2230] w-full max-w-sm">
-        <p className="text-[14px] font-semibold text-slate-100 mb-6">
-          Rate<span className="text-teal-300">Guard</span>
+    <div className="relative min-h-screen bg-base text-primary flex items-center justify-center px-4">
+      <div className="absolute inset-x-0 top-0 h-44 hero-glow pointer-events-none" />
+
+      <form onSubmit={handleSubmit} className="relative bg-elevated p-8 rounded-md border border-border-subtle w-full max-w-sm shadow-xs">
+        <p className="text-xs uppercase tracking-eyebrow text-secondary font-medium mb-5">
+          Rate<span className="text-accent-teal">Guard</span>
         </p>
-        <h1 className="text-[20px] font-semibold text-slate-100 mb-1">Log in</h1>
-        <p className="text-[13px] text-slate-500 mb-6">Welcome back — enter your details.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-primary mb-1">Log in</h1>
+        <p className="text-xs text-muted mb-6">Welcome back — enter your details.</p>
 
         <div className="mb-4">
-          <label className="block text-[12px] text-slate-500 mb-1.5">Email</label>
+          <label className="block text-xs text-muted mb-1.5 font-medium">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[#0B0E14] border border-[#1C2230] rounded-xl px-3 py-2 text-[14px] text-slate-100 placeholder-slate-600 focus:outline-none focus:border-teal-300/50 transition-colors"
+            className="w-full bg-base border border-border-subtle rounded-sm px-3.5 py-2 text-sm text-primary placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal transition-colors"
             required
           />
         </div>
         <div className="mb-6">
-          <label className="block text-[12px] text-slate-500 mb-1.5">Password</label>
+          <label className="block text-xs text-muted mb-1.5 font-medium">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[#0B0E14] border border-[#1C2230] rounded-xl px-3 py-2 text-[14px] text-slate-100 focus:outline-none focus:border-teal-300/50 transition-colors"
+            className="w-full bg-base border border-border-subtle rounded-sm px-3.5 py-2 text-sm text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal transition-colors"
             required
           />
         </div>
 
         {error && (
-          <p className="text-[12px] text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-3 py-2 mb-4">
+          <p className="text-xs text-danger bg-danger/10 border border-danger/20 rounded-sm px-3.5 py-2.5 mb-5">
             {error}
           </p>
         )}
@@ -74,14 +76,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-teal-300 hover:bg-teal-200 disabled:opacity-50 disabled:cursor-wait text-[#0B0E14] py-2.5 rounded-xl text-[13px] font-semibold transition-colors"
+          className="w-full bg-btn-light-bg hover:bg-white disabled:opacity-50 disabled:cursor-wait text-btn-light-text py-2 rounded-sm text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal shadow-xs"
         >
           {submitting ? 'Logging in…' : 'Log in'}
         </button>
 
-        <p className="text-[13px] text-slate-500 mt-5 text-center">
+        <p className="text-xs text-muted mt-5 text-center">
           Don't have an account?{' '}
-          <Link to="/register" className="text-teal-300 hover:underline">Register</Link>
+          <Link to="/register" className="text-accent-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal rounded-sm">Register</Link>
         </p>
       </form>
     </div>
