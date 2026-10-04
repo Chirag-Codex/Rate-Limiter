@@ -2,6 +2,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import Project from "../models/Project.js";
 import Bucket from "../models/Bucket.js";
+import User from "../models/User.js";
 
 function generateApiKey() {
   return crypto.randomBytes(32).toString("hex");
@@ -14,6 +15,19 @@ function hashApiKey(apiKey) {
 export async function createProject(req, res) {
   try {
     const { name, websiteUrl, capacity, refillRate } = req.body;
+    const user =await User.findById(req.user._id);
+    const existingProjectsCount = await Project.countDocuments({ ownerId: req.user._id });
+
+    if(existingProjectsCount>=user.maxProjects){
+      return res.status(403).json({
+        error:`Project Limit Reached`,
+        msg:`Your ${user.plan} plan allows up to ${user.maxProjects} projects.
+        Please upgrade your plan to create more projects.`,
+        currentCount:existingProjectsCount,
+        maxProjects:user.maxProjects,
+        plan:user.plan
+      })
+    }
     if (!name || typeof name !== "string" || name.trim().length === 0) {
       return res.status(400).json({ error: "Project name is required and must be a non-empty string" });
     }
@@ -34,12 +48,12 @@ export async function createProject(req, res) {
     const hashedKey = hashApiKey(rawKey);
 
     const project = new Project({
-      name,
-      websiteUrl,
+      name:name.trim(),
+      websiteUrl:websiteUrl.trim(),
       ownerId: req.user._id,
       apiKeyHash: hashedKey,
-      capacity: capacity || 10,
-      refillRate: refillRate || 1,
+      capacity: capacity !== undefined ? capacity : 10,
+      refillRate: refillRate !== undefined ? refillRate : 1,
     });
     await project.save();
     res.status(201).json({

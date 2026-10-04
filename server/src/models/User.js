@@ -19,6 +19,23 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    plan:{
+      type:String,
+      enum: ['FREE','GOLD', 'PRO'],
+      default: 'FREE'
+    },
+    maxProjects:{
+      type:Number,
+      default: 3
+    },
+    razorpayCustomerId: {
+      type: String,
+      default: null,
+    },
+    subscriptionExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

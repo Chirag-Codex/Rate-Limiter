@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
 import TestEndpointPage from './pages/Testendpointpage'
+import PricingPage from './pages/PricingPage'
 
 function AppRoutes() {
   const { token } = useAuth()
@@ -18,8 +19,9 @@ function AppRoutes() {
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:id" element={<ProjectDetailPage />} />
         <Route path="/test" element={<TestEndpointPage />} />
+         <Route path="/pricing" element={<PricingPage />} /> 
       </Route>
-
+     
       <Route path="*" element={<Navigate to="/projects" replace />} />
     </Routes>
   )

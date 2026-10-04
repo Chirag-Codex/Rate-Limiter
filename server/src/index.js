@@ -8,7 +8,7 @@ import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import v1Routes from "./routes/v1Routes.js";
-
+import paymentRoutes from "./routes/paymentRoutes.js";
 const app = express();
 app.set("trust proxy", 1);
 
@@ -59,7 +59,7 @@ app.use("/auth", authRoutes);
 app.use("/api", demoRoutes);
 app.use("/projects", projectRoutes);
 app.use("/v1", v1Routes);
-
+app.use("/api/payments", paymentRoutes);
 app.use((req, res) => {
   res.status(404).json({
     error: "Not Found",
